@@ -6,7 +6,7 @@
 
 - React 19 + TypeScript + Vite
 - Zustand（状态管理）+ idb（IndexedDB 本地持久化，本地优先 MVP，无后端）
-- 设计语言：奶油白 / 暖橙 / 鼠尾草绿 + Liquid Glass + 扁平线性图标（已在高保真原型验收）
+- 设计语言：奶油白 / 暖橙 / 鼠尾草绿 + Liquid Glass + 扁平线性图标（已在高保真原型真机验收）
 
 ## 开发
 
@@ -19,9 +19,15 @@ npm run lint
 
 ## 发布
 
-推送 `main` 分支后，GitHub Actions 自动构建并部署到 GitHub Pages：
+```bash
+GITHUB_TOKEN=你的令牌 npm run deploy
+```
 
-https://1998JunBin.github.io/chishenme/
+构建并把 dist 推送到 `gh-pages` 分支，站点地址：
+
+https://1998junbin.github.io/chishenme/
+
+> 说明：GitHub Actions 自动部署（`.github/workflows/deploy.yml`）已备好，待发布令牌补充 `workflow` 权限后即可切换为推送即自动发布。
 
 ## 文档
 
