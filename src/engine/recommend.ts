@@ -57,16 +57,19 @@ export function scoreDish(dish: Dish, ctx: RecommendContext): number {
 /**
  * 为某个分类推荐 count 道菜（按得分降序）。
  * @param extra 追加的候选（用户自定义菜谱）
+ * @param pool 覆盖内置候选池（含用户编辑覆盖后的菜品）；缺省用内置数据
  */
 export function recommend(
   category: Category,
   ctx: RecommendContext,
   count: number,
   extra: Dish[] = [],
+  pool?: Dish[],
 ): Dish[] {
   const rng = ctx.rng ?? Math.random
+  const builtins = pool ?? DISHES_BY_CATEGORY[category]
   const candidates = [
-    ...DISHES_BY_CATEGORY[category],
+    ...builtins.filter((d) => d.category === category),
     ...extra.filter((d) => d.category === category),
   ].filter((d) => filterAllowed(d, ctx))
 

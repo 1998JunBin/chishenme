@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CAT_ICON, CAT_NAME } from '../components/DishImage'
 import { Icon } from '../components/Icon'
-import { addCombo, newId } from '../db/db'
+import { newId } from '../db/db'
 import { useApp } from '../store/app'
+import { useLibrary } from '../store/library'
 import { CATEGORY_ORDER, useSession } from '../store/session'
 import type { Category, Dish } from '../types'
 
@@ -10,6 +11,7 @@ export function DoneScreen() {
   const session = useSession()
   const setScreen = useApp((s) => s.setScreen)
   const setTab = useApp((s) => s.setTab)
+  const addCombo = useLibrary((s) => s.addCombo)
   const [toast, setToast] = useState<string | null>(null)
   const [exportOpen, setExportOpen] = useState(false)
   const [exportBlob, setExportBlob] = useState<Blob | null>(null)

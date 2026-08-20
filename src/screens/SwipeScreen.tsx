@@ -4,6 +4,7 @@ import { Icon } from '../components/Icon'
 import { recordRecent } from '../db/db'
 import { buildSessionRanked } from '../engine/session'
 import { useApp } from '../store/app'
+import { useLibrary } from '../store/library'
 import { CATEGORY_ORDER, useSession } from '../store/session'
 import type { Category, Dish } from '../types'
 
@@ -58,6 +59,7 @@ export function SwipeScreen() {
     setFlyOut({ dish: current, kind: 'select' })
     window.setTimeout(() => setFlyOut(null), 460)
     void recordRecent(current.id).catch(() => {})
+    useLibrary.getState().noteRecent(current.id)
     if (useSession.getState().allDone()) {
       window.setTimeout(() => setScreen('done'), 640)
     }

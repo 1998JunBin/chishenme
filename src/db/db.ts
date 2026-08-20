@@ -38,7 +38,8 @@ function getDB() {
 export async function loadPrefs(): Promise<Prefs> {
   const db = await getDB()
   const stored = await db.get('prefs', 'main')
-  return stored ?? { ...DEFAULT_PREFS }
+  // 与默认值合并，兼容旧版本缺少新增字段
+  return { ...DEFAULT_PREFS, ...stored, dishOverrides: stored?.dishOverrides ?? {} }
 }
 
 export async function savePrefs(prefs: Prefs): Promise<void> {
@@ -95,6 +96,11 @@ export async function listRecent(limit = 30): Promise<RecentRecord[]> {
 export async function recordRecent(id: string): Promise<void> {
   const db = await getDB()
   await db.put('recent', { id, eatenAt: Date.now() })
+}
+
+export async function clearRecent(): Promise<void> {
+  const db = await getDB()
+  await db.clear('recent')
 }
 
 /* ---------- 工具 ---------- */

@@ -13,9 +13,12 @@ interface AppState {
   screen: Screen
   prefs: Prefs
   ready: boolean
+  /** 编辑中的菜：id + 是否自定义菜 */
+  editing: { id: string; custom: boolean } | null
   setTab: (t: Tab) => void
   setScreen: (s: Screen) => void
   patchPrefs: (p: Partial<Prefs>) => void
+  setEditing: (e: { id: string; custom: boolean } | null) => void
   init: () => Promise<void>
 }
 
@@ -24,8 +27,10 @@ export const useApp = create<AppState>((set, get) => ({
   screen: 'tab',
   prefs: { ...DEFAULT_PREFS },
   ready: false,
+  editing: null,
   setTab: (tab) => set({ tab, screen: 'tab' }),
   setScreen: (screen) => set({ screen }),
+  setEditing: (editing) => set({ editing }),
   patchPrefs: (p) => {
     const prefs = { ...get().prefs, ...p }
     set({ prefs })

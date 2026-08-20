@@ -62,9 +62,10 @@ describe('应用骨架与首页', () => {
     render(<App />)
     await screen.findByText('吃什么？')
     fireEvent.click(screen.getByText('菜谱'))
-    expect(await screen.findByText('菜谱模块开发中')).toBeTruthy()
+    expect(await screen.findByText('添加')).toBeTruthy()
+    expect(screen.getByText('全部')).toBeTruthy()
     fireEvent.click(screen.getByText('我的'))
-    expect(await screen.findByText('我的模块开发中')).toBeTruthy()
+    expect(await screen.findByText('我的喜欢')).toBeTruthy()
   })
 
   it('点击规格大卡进入设置页', async () => {

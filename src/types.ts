@@ -52,6 +52,16 @@ export const DEFAULT_TAG_OPTIONS = [
   '适合多人',
 ] as const
 
+/** 内置菜谱的用户覆盖（编辑内置菜时写入，展示/推荐时合并） */
+export interface DishOverride {
+  name?: string
+  time?: number
+  difficulty?: Difficulty
+  tags?: string[]
+  image?: string
+  category?: Category
+}
+
 /** 用户偏好（IndexedDB 单条记录） */
 export interface Prefs {
   id: 'main'
@@ -66,6 +76,8 @@ export interface Prefs {
   customTags: string[]
   /** 是否已看过滑卡手势提示 */
   hintSeen?: boolean
+  /** 内置菜谱编辑覆盖 */
+  dishOverrides?: Record<string, DishOverride>
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -79,6 +91,7 @@ export const DEFAULT_PREFS: Prefs = {
   novelty: 0.64,
   customTags: [],
   hintSeen: false,
+  dishOverrides: {},
 }
 
 /** 用户自定义菜谱 */

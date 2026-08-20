@@ -1,6 +1,6 @@
 import { listCustomDishes, listRecent } from '../db/db'
-import { DISHES_BY_CATEGORY } from '../data/dishes'
-import { mulberry32, recommend } from '../engine/recommend'
+import { effectiveByCategory } from './library'
+import { mulberry32, recommend } from './recommend'
 import type { Category, Dish, Prefs, Spec } from '../types'
 
 /** 把自定义菜谱转换成推荐引擎可用的 Dish */
@@ -19,6 +19,7 @@ export function customDishToDish(d: {
 /**
  * 会话开始：加载自定义菜与最近吃过，用推荐引擎为每个分类
  * 生成一次候选排名（种子随机，本会话内稳定）。
+ * 内置候选应用用户编辑覆盖（dishOverrides）。
  */
 export async function buildSessionRanked(
   prefs: Prefs,
@@ -35,10 +36,11 @@ export async function buildSessionRanked(
     rng: mulberry32((Date.now() % 100000) + 7),
   }
   const extra = custom.map(customDishToDish)
+  const pool = effectiveByCategory(prefs.dishOverrides)
   const ranked: Record<Category, Dish[]> = {
-    meat: recommend('meat', ctx, DISHES_BY_CATEGORY.meat.length, extra),
-    veg: recommend('veg', ctx, DISHES_BY_CATEGORY.veg.length, extra),
-    soup: recommend('soup', ctx, DISHES_BY_CATEGORY.soup.length, extra),
+    meat: recommend('meat', ctx, pool.meat.length, extra, pool.meat),
+    veg: recommend('veg', ctx, pool.veg.length, extra, pool.veg),
+    soup: recommend('soup', ctx, pool.soup.length, extra, pool.soup),
   }
   return { spec: prefs.spec, ranked }
 }

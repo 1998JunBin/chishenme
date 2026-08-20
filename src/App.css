@@ -1233,3 +1233,442 @@
   white-space: nowrap;
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
+
+/* ============ 菜谱 ============ */
+.recipes-screen {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  animation: screen-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.recipes-screen::-webkit-scrollbar {
+  display: none;
+}
+.list-head {
+  padding: 26px 20px 6px;
+}
+.list-head.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.list-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+}
+.btn-add {
+  width: auto;
+  padding: 10px 16px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.seg2 {
+  display: flex;
+  gap: 8px;
+  margin: 14px 20px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.seg2::-webkit-scrollbar {
+  display: none;
+}
+.seg2 .chip {
+  flex: 0 0 auto;
+}
+.recipe-list {
+  padding: 4px 0 26px;
+}
+.dish-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(120, 90, 60, 0.1);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.dish-row:active {
+  background: rgba(255, 255, 255, 0.55);
+}
+.dish-row .thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  overflow: hidden;
+  flex: 0 0 58px;
+  background: var(--cream-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sage);
+}
+.dish-info {
+  flex: 1;
+  min-width: 0;
+}
+.dish-n {
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.badge-diff {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sage);
+  background: var(--sage-soft);
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin-left: 6px;
+}
+.badge-custom {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--orange);
+  background: rgba(255, 122, 60, 0.12);
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin-left: 6px;
+}
+.dish-m {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dish-chev {
+  font-size: 20px;
+  color: var(--ink-3);
+}
+.dish-head {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.dish-head .ph {
+  width: 84px;
+  height: 84px;
+  border-radius: 18px;
+  overflow: hidden;
+  flex: 0 0 84px;
+  background: var(--cream-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sage);
+}
+.dish-head-info h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+.dish-head-meta {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.dish-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.dish-tags .tag {
+  background: var(--sage-soft);
+  color: var(--sage);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.dish-actions {
+  display: flex;
+  gap: 11px;
+  margin-top: 18px;
+}
+.dish-actions .btn {
+  flex: 1;
+}
+
+/* ============ 添加/编辑菜谱 ============ */
+.add-screen {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  animation: screen-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.add-screen::-webkit-scrollbar {
+  display: none;
+}
+.img-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.img-preview {
+  width: 74px;
+  height: 74px;
+  border-radius: 16px;
+  background: var(--cream-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sage);
+  overflow: hidden;
+  flex: 0 0 74px;
+}
+.img-side {
+  flex: 1;
+}
+.img-btn {
+  width: auto;
+  padding: 11px 16px;
+  font-size: 14px;
+}
+.img-hint {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 8px;
+}
+.field {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 15px 16px;
+  font-size: 16px;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none;
+  -webkit-appearance: none;
+}
+.field:focus {
+  border-color: var(--orange);
+}
+.seg3 {
+  display: flex;
+  gap: 8px;
+}
+.seg3 .opt {
+  flex: 1;
+  text-align: center;
+  padding: 12px 6px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.seg3 .opt.on {
+  background: var(--orange);
+  color: #fff;
+  border-color: var(--orange);
+  box-shadow: 0 8px 18px rgba(255, 107, 46, 0.3);
+}
+.add-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.add-row .field {
+  flex: 1;
+}
+.add-row-btn {
+  width: auto;
+  padding: 12px 18px;
+  flex: 0 0 auto;
+}
+
+/* ============ 我的 ============ */
+.profile-screen {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  animation: screen-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.profile-screen::-webkit-scrollbar {
+  display: none;
+}
+.group {
+  margin: 14px 20px 0;
+}
+.row-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 16px;
+  padding: 16px 17px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.row-l {
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.row-l svg {
+  color: var(--orange);
+}
+.row-v {
+  font-size: 13px;
+  color: var(--ink-3);
+  max-width: 50%;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.novelty-card {
+  border-radius: 18px;
+  padding: 18px;
+}
+.novelty-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.slider {
+  height: 7px;
+  background: rgba(120, 90, 60, 0.14);
+  border-radius: 4px;
+  position: relative;
+  margin-top: 18px;
+  cursor: pointer;
+  touch-action: none;
+}
+.slider i {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--orange);
+  border: 2px solid #fff;
+  box-shadow: 0 3px 10px rgba(255, 107, 46, 0.4);
+}
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 9px;
+}
+.note {
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.7;
+  margin: 18px 20px 0;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed rgba(120, 90, 60, 0.25);
+  border-radius: 14px;
+  padding: 13px 15px;
+}
+.reset-wrap {
+  margin: 16px 20px 40px;
+}
+.avoid-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+.avoid-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--sage-soft);
+  color: var(--sage);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-weight:700;
+  cursor: pointer;
+}
+.avoid-chip .x {
+  font-size: 14px;
+  opacity: 0.7;
+}
+.combo-card {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.combo-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(120, 90, 60, 0.1);
+}
+.combo-title {
+  font-size: 14px;
+  font-weight: 800;
+  flex: 1;
+}
+.combo-date {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.combo-del {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(120, 90, 60, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.combo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+}
+.combo-item .ic {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--sage-soft);
+  color: var(--sage);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  overflow: hidden;
+}
+.combo-nm {
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+}
+.combo-tm {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.sheet-item .nm {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 700;
+}
