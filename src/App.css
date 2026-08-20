@@ -549,6 +549,13 @@
   from { transform: translateX(48px) scale(0.9) rotate(6deg); opacity: 0; }
   to { transform: translateX(28px) scale(0.92) rotate(5deg); opacity: 0.5; }
 }
+#card2.peek-in2 {
+  animation: peek-in2 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes peek-in2 {
+  from { transform: translateX(26px) scale(0.95) rotate(2.5deg); opacity: 0.45; }
+  to { transform: translateX(14px) scale(0.96) rotate(2.5deg); opacity: 0.78; }
+}
 .card.pop {
   animation: card-pop 0.38s cubic-bezier(0.2, 0.8, 0.2, 1);
 }

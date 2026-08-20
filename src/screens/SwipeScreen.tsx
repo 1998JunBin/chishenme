@@ -40,6 +40,23 @@ export function SwipeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  /* 预加载：提前把各分类接下来几道菜的图片缓存好，
+     滑卡后新卡秒出，避免“卡一下”（图片加载闪烁） */
+  useEffect(() => {
+    if (!session.started) return
+    for (const c of CATEGORY_ORDER) {
+      const list = session.ranked[c]
+      if (!list.length) continue
+      for (let k = 0; k < 5; k++) {
+        const d = list[(session.pointer[c] + k) % list.length]
+        if (d?.image) {
+          const im = new Image()
+          im.src = d.image
+        }
+      }
+    }
+  }, [session.started, session.ranked, session.pointer])
+
   const current = session.current()
   const active = session.active
   const ranked = session.ranked[active]
@@ -232,7 +249,7 @@ export function SwipeScreen() {
             </div>
           )}
           {next1 && (
-            <div key={`c2-${next1.id}`} className="card peek" id="card2">
+            <div key={`c2-${next1.id}`} className="card peek peek-in2" id="card2">
               <CardView dish={next1} category={active} liked={prefs.likes.includes(next1.id)} disliked={prefs.dislikes.includes(next1.id)} />
             </div>
           )}
