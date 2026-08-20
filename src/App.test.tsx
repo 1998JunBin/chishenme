@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { useApp } from './store/app'
+import { useLibrary } from './store/library'
 import { useSession } from './store/session'
 import { DEFAULT_PREFS } from './types'
 
@@ -41,6 +42,7 @@ beforeEach(() => {
     ready: true,
   })
   useSession.getState().clear()
+  useLibrary.setState({ customDishes: [], combos: [], recent: [], ready: true })
   window.location.hash = ''
 })
 
@@ -122,5 +124,62 @@ describe('设置页交互', () => {
     await screen.findByText('设置这一餐')
     fireEvent.click(document.querySelector('.topbar .back') as Element)
     expect(await screen.findByText('开始选今天吃什么')).toBeTruthy()
+  })
+})
+
+describe('菜谱与我的模块', () => {
+  it('添加自定义菜谱后出现在列表中', async () => {
+    render(<App />)
+    await screen.findByText('吃什么？')
+    fireEvent.click(screen.getByText('菜谱'))
+    await screen.findByText('添加')
+    fireEvent.click(screen.getByText('添加'))
+    await screen.findByText('添加我的菜谱')
+    const input = screen.getByPlaceholderText('例如：家常炒鸡') as HTMLInputElement
+    fireEvent.change(input, { target: { value: '我的拿手菜' } })
+    fireEvent.click(screen.getByText('保存菜谱'))
+    // 回到菜谱列表，新菜出现
+    expect(await screen.findByText('我的拿手菜')).toBeTruthy()
+  })
+
+  it('编辑内置菜：改名后列表生效', async () => {
+    render(<App />)
+    await screen.findByText('吃什么？')
+    fireEvent.click(screen.getByText('菜谱'))
+    await screen.findByText('添加')
+    // 点第一道菜进详情 → 编辑 → 改名 → 保存
+    const firstDish = (await screen.findAllByText(/分钟$/))[0]
+    fireEvent.click(firstDish)
+    const editBtn = await screen.findByText('编辑')
+    fireEvent.click(editBtn)
+    await screen.findByText('编辑菜谱')
+    const input = screen.getByPlaceholderText('例如：家常炒鸡') as HTMLInputElement
+    fireEvent.change(input, { target: { value: '改名后的菜' } })
+    fireEvent.click(screen.getByText('保存菜谱'))
+    expect(await screen.findByText('改名后的菜')).toBeTruthy()
+  })
+
+  it('不吃的食材可新增', async () => {
+    render(<App />)
+    await screen.findByText('吃什么？')
+    fireEvent.click(screen.getByText('我的'))
+    await screen.findByText('我的喜欢')
+    fireEvent.click(screen.getByText('不吃的食材'))
+    await screen.findByText('推荐时会过滤这些食材')
+    const input = screen.getByPlaceholderText('添加食材，如：香菜') as HTMLInputElement
+    fireEvent.change(input, { target: { value: '洋葱' } })
+    fireEvent.click(screen.getByText('添加'))
+    expect(await screen.findByText('洋葱')).toBeTruthy()
+  })
+
+  it('口味偏好可切换', async () => {
+    render(<App />)
+    await screen.findByText('吃什么？')
+    fireEvent.click(screen.getByText('我的'))
+    await screen.findByText('我的喜欢')
+    fireEvent.click(screen.getByText('口味偏好'))
+    const spicy = await screen.findByText('中辣')
+    fireEvent.click(spicy)
+    expect(spicy.className).toContain('on')
   })
 })

@@ -7,6 +7,7 @@
 - React 19 + TypeScript + Vite
 - Zustand（状态管理）+ idb（IndexedDB 本地持久化，本地优先 MVP，无后端）
 - 设计语言：奶油白 / 暖橙 / 鼠尾草绿 + Liquid Glass + 扁平线性图标（已在高保真原型真机验收）
+- PWA：可添加到主屏（manifest + Service Worker 预缓存），离线可用
 
 ## 开发
 
