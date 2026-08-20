@@ -1,9 +1,36 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { useApp } from './store/app'
+import { useSession } from './store/session'
 import { DEFAULT_PREFS } from './types'
+
+vi.mock('./db/db', () => ({
+  loadPrefs: async () => ({
+    id: 'main',
+    spec: { meat: 2, veg: 2, soup: 1, people: 3 },
+    tags: ['快手', '辣'],
+    likes: [],
+    dislikes: [],
+    avoid: ['香菜', '苦瓜'],
+    taste: '微辣',
+    novelty: 0.64,
+    customTags: [],
+    hintSeen: false,
+  }),
+  savePrefs: async () => {},
+  listCustomDishes: async () => [],
+  addCustomDish: async () => {},
+  updateCustomDish: async () => {},
+  deleteCustomDish: async () => {},
+  listCombos: async () => [],
+  addCombo: async () => {},
+  deleteCombo: async () => {},
+  listRecent: async () => [],
+  recordRecent: async () => {},
+  newId: () => 'id_test',
+}))
 
 beforeEach(() => {
   // 重置模块级 store，避免用例间状态泄漏
@@ -13,6 +40,7 @@ beforeEach(() => {
     prefs: { ...DEFAULT_PREFS },
     ready: true,
   })
+  useSession.getState().clear()
   window.location.hash = ''
 })
 
@@ -47,11 +75,13 @@ describe('应用骨架与首页', () => {
     expect(screen.getByText('今天吃几道菜？')).toBeTruthy()
   })
 
-  it('点击主按钮进入滑卡页（占位）', async () => {
+  it('点击主按钮进入滑卡推荐页', async () => {
     render(<App />)
     await screen.findByText('吃什么？')
     fireEvent.click(screen.getByText('开始选今天吃什么'))
-    expect(await screen.findByText('滑卡推荐开发中')).toBeTruthy()
+    expect(await screen.findByText('就它了')).toBeTruthy()
+    expect(screen.getByText('上一道')).toBeTruthy()
+    expect(screen.getByText('下一道')).toBeTruthy()
   })
 })
 

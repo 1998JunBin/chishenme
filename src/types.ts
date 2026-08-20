@@ -64,6 +64,8 @@ export interface Prefs {
   /** 0–1，越大越倾向尝试新菜 */
   novelty: number
   customTags: string[]
+  /** 是否已看过滑卡手势提示 */
+  hintSeen?: boolean
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -76,6 +78,7 @@ export const DEFAULT_PREFS: Prefs = {
   taste: '微辣',
   novelty: 0.64,
   customTags: [],
+  hintSeen: false,
 }
 
 /** 用户自定义菜谱 */

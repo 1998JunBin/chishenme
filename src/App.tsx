@@ -4,6 +4,7 @@ import { PhoneShell } from './components/PhoneShell'
 import { HomeScreen } from './screens/HomeScreen'
 import { SetupScreen } from './screens/SetupScreen'
 import { SwipeScreen } from './screens/SwipeScreen'
+import { DoneScreen } from './screens/DoneScreen'
 import { ProfileScreen, RecipesScreen } from './screens/PlaceholderScreens'
 import { useApp } from './store/app'
 
@@ -29,6 +30,7 @@ export default function App() {
   let content
   if (screen === 'setup') content = <SetupScreen />
   else if (screen === 'swipe') content = <SwipeScreen />
+  else if (screen === 'done') content = <DoneScreen />
   else if (tab === 'recipes') content = <RecipesScreen />
   else if (tab === 'profile') content = <ProfileScreen />
   else content = <HomeScreen />
