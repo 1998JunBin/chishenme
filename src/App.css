@@ -297,7 +297,8 @@
   align-items: center;
   gap: 9px;
 }
-.stepper-lab svg {
+.stepper-lab svg,
+.stepper-lab [data-mask-icon] {
   color: var(--orange);
 }
 .stepper-ctrl {

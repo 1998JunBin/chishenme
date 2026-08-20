@@ -228,18 +228,18 @@ export function DoneScreen() {
       for (const id of session.selected[c]) {
         const d = dishById.get(id)
         if (!d) continue
-        // 菜品缩略图（圆角裁剪）
+        // 菜品缩略图（圆角裁剪）：贴在行顶部，避免压到上方分组标题
         if (d.image) {
           const img = await loadImage(d.image)
-          if (img) drawRoundedImage(ctx, img, P + 8, y - 76, 78, 78, 14)
+          if (img) drawRoundedImage(ctx, img, P + 8, y + 2, 78, 78, 14)
         }
         ctx.fillStyle = '#2A241E'
         ctx.font = `600 42px ${F}`
-        ctx.fillText(d.name, P + 104, y + 38)
+        ctx.fillText(d.name, P + 104, y + 58)
         ctx.fillStyle = '#8A7F74'
         ctx.font = `400 30px ${F}`
         ctx.textAlign = 'right'
-        ctx.fillText(`${d.time}分钟`, W - P, y + 36)
+        ctx.fillText(`${d.time}分钟`, W - P, y + 56)
         ctx.textAlign = 'left'
         y += 96
       }

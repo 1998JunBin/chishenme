@@ -51,7 +51,7 @@ export function Icon({ name, size = 24, strokeWidth = 1.8, className, style }: I
       maskPosition: 'center',
       ...style,
     }
-    return <span className={className} style={maskStyle} aria-hidden />
+    return <span className={className} data-mask-icon style={maskStyle} aria-hidden />
   }
   const filled = FILLED.has(name)
   return (
