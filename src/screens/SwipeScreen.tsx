@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { DishImage } from '../components/DishImage'
 import { CAT_ICON, CAT_NAME } from '../components/categories'
 import { Icon } from '../components/Icon'
+import { SheetOverlay } from '../components/Sheet'
 import { recordRecent } from '../db/db'
 import { buildSessionRanked } from '../engine/session'
 import { useApp } from '../store/app'
@@ -17,13 +18,15 @@ export function SwipeScreen() {
   const patchPrefs = useApp((s) => s.patchPrefs)
   const setScreen = useApp((s) => s.setScreen)
 
-  const [flyOut, setFlyOut] = useState<{ dish: Dish; kind: FlyKind } | null>(null)
+  const [seq, setSeq] = useState(0)
+  const [popIn, setPopIn] = useState(false)
   const [flipCat, setFlipCat] = useState<Category | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [stamp, setStamp] = useState<{ kind: 'skip' | 'back'; opacity: number } | null>(null)
 
   const cardRef = useRef<HTMLDivElement>(null)
   const drag = useRef({ sx: 0, sy: 0, dx: 0, dy: 0, active: false })
+  const pendingRef = useRef(false)
 
   /* 会话初始化：按偏好生成各类别候选排名 */
   useEffect(() => {
@@ -50,36 +53,69 @@ export function SwipeScreen() {
     if (!prefs.hintSeen) patchPrefs({ hintSeen: true })
   }
 
+  /** 卡片本体直接飞出，飞出结束后再更新状态（与验收原型一致，避免“重复”感） */
+  function flyCard(kind: FlyKind, after: () => void) {
+    if (pendingRef.current) return
+    pendingRef.current = true
+    const el = cardRef.current
+    if (!el) {
+      after()
+      pendingRef.current = false
+      return
+    }
+    if (kind === 'select') {
+      el.style.transition = 'transform .45s cubic-bezier(.4,.05,.5,1), opacity .45s'
+      el.style.transform = 'translateY(-130%) rotate(-6deg) scale(.92)'
+      el.style.opacity = '0'
+    } else if (kind === 'skip') {
+      el.style.transition = 'transform .4s cubic-bezier(.5,.1,.7,.4), opacity .4s'
+      el.style.transform = 'translateX(-150%) rotate(-18deg)'
+      el.style.opacity = '0'
+    } else {
+      el.style.transition = 'transform .4s cubic-bezier(.5,.1,.7,.4), opacity .4s'
+      el.style.transform = 'translateX(150%) rotate(18deg)'
+      el.style.opacity = '0'
+    }
+    window.setTimeout(() => {
+      after()
+      pendingRef.current = false
+    }, kind === 'select' ? 460 : 410)
+  }
+
   function doSelect() {
     if (!current) return
     const cat = active
+    const dishId = current.id
     markHint()
-    session.select()
-    setFlipCat(cat)
-    window.setTimeout(() => setFlipCat(null), 600)
-    setFlyOut({ dish: current, kind: 'select' })
-    window.setTimeout(() => setFlyOut(null), 460)
-    void recordRecent(current.id).catch(() => {})
-    useLibrary.getState().noteRecent(current.id)
-    if (useSession.getState().allDone()) {
-      window.setTimeout(() => setScreen('done'), 640)
-    }
+    flyCard('select', () => {
+      session.select()
+      setSeq((n) => n + 1)
+      setFlipCat(cat)
+      window.setTimeout(() => setFlipCat(null), 600)
+      void recordRecent(dishId).catch(() => {})
+      useLibrary.getState().noteRecent(dishId)
+      if (useSession.getState().allDone()) {
+        window.setTimeout(() => setScreen('done'), 320)
+      }
+    })
   }
 
   function doSkip() {
     if (!current) return
     markHint()
-    session.skip()
-    setFlyOut({ dish: current, kind: 'skip' })
-    window.setTimeout(() => setFlyOut(null), 410)
+    flyCard('skip', () => {
+      session.skip()
+      setSeq((n) => n + 1)
+    })
   }
 
   function doUndo() {
     if (!current || !session.history[active].length) return
     markHint()
-    session.undo()
-    setFlyOut({ dish: current, kind: 'undo' })
-    window.setTimeout(() => setFlyOut(null), 410)
+    flyCard('undo', () => {
+      session.undo()
+      setSeq((n) => n + 1)
+    })
   }
 
   function toggleLike() {
@@ -168,7 +204,12 @@ export function SwipeScreen() {
                 key={c}
                 className={`sseg${c === active ? ' cur' : ''}${done ? ' done' : ''}`}
                 onClick={() => {
-                  if (c !== active && !done) session.switchCat(c)
+                  if (c !== active && !done) {
+                    session.switchCat(c)
+                    setSeq((n) => n + 1)
+                    setPopIn(true)
+                    window.setTimeout(() => setPopIn(false), 400)
+                  }
                 }}
               >
                 <div className="sseg-n">
@@ -196,9 +237,9 @@ export function SwipeScreen() {
             </div>
           )}
           <div
-            key={`front-${current.id}`}
+            key={`front-${seq}`}
             ref={cardRef}
-            className="card pop"
+            className={`card${popIn ? ' pop' : ''}`}
             id="card"
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
@@ -221,12 +262,6 @@ export function SwipeScreen() {
               <div className="stamp stamp-back" style={{ opacity: stamp.opacity }}>↩ 返回</div>
             )}
           </div>
-
-          {flyOut && (
-            <div key={`fly-${flyOut.kind}`} className={`card fly-overlay fly-${flyOut.kind}`}>
-              <CardView dish={flyOut.dish} category={flyOut.dish.category} liked={false} disliked={false} />
-            </div>
-          )}
 
           {!prefs.hintSeen && (
             <div className="hint">
@@ -327,12 +362,10 @@ function SelectedSheet({ open, onClose }: { open: boolean; onClose: () => void }
   }, [session.ranked])
 
   return (
-    <>
-      <div className={`scrim${open ? ' show' : ''}`} onClick={onClose} />
-      <div className={`sheet${open ? ' show' : ''}`}>
-        <div className="grab" />
-        <h3>本餐已选菜单</h3>
-        <p className="sheet-sub">已选 {session.countPicked()} 道</p>
+    <SheetOverlay open={open} onClose={onClose}>
+      <div className="grab" />
+      <h3>本餐已选菜单</h3>
+      <p className="sheet-sub">已选 {session.countPicked()} 道</p>
         <div>
           {CATEGORY_ORDER.map((c) =>
             session.selected[c].map((id) => {
@@ -369,8 +402,7 @@ function SelectedSheet({ open, onClose }: { open: boolean; onClose: () => void }
             继续选菜
           </button>
         </div>
-      </div>
-    </>
+    </SheetOverlay>
   )
 }
 

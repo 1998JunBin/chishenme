@@ -12,26 +12,10 @@ export function PhoneShell({ children }: { children: ReactNode }) {
           <div className="blob b" />
           <div className="blob c" />
         </div>
-        <StatusBar />
         <div className="screens">{children}</div>
         <TabBar />
       </div>
-      <div className="caption">吃什么 · V1 开发版</div>
-    </div>
-  )
-}
-
-function StatusBar() {
-  return (
-    <div className="statusbar">
-      <span>9:41</span>
-      <span className="statusbar-right">
-        <span className="sig">
-          <i /><i /><i /><i />
-        </span>
-        &nbsp;
-        <span className="batt"><i /></span>
-      </span>
+      <div className="caption">吃什么 · V1</div>
     </div>
   )
 }

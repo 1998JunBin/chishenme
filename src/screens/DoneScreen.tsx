@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CAT_ICON, CAT_NAME } from '../components/categories'
 import { Icon } from '../components/Icon'
+import { SheetOverlay } from '../components/Sheet'
 import { newId } from '../db/db'
 import { useApp } from '../store/app'
 import { useLibrary } from '../store/library'
@@ -32,6 +33,12 @@ export function DoneScreen() {
   useEffect(() => {
     confettiBurst()
     fireworksBurst()
+    // 深链调试/演示：#done-export 自动打开导出浮层
+    if (location.hash.includes('export')) {
+      const t = window.setTimeout(() => exportImage(), 500)
+      return () => window.clearTimeout(t)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function swapDish(cat: Category, id: string) {
@@ -160,9 +167,8 @@ export function DoneScreen() {
         <svg id="celebrateSVG" viewBox="0 0 390 320" width="100%" height="100%" />
       </div>
 
-      {/* 导出动作条 */}
-      <div className={`scrim${exportOpen ? ' show' : ''}`} onClick={() => setExportOpen(false)} />
-      <div className={`sheet${exportOpen ? ' show' : ''}`}>
+      {/* 导出动作条（Portal 到手机壳层，固定底部弹出） */}
+      <SheetOverlay open={exportOpen} onClose={() => setExportOpen(false)}>
         <div className="grab" />
         <h3>导出图片</h3>
         <p className="sheet-sub">把这张菜单保存或分享</p>
@@ -177,7 +183,7 @@ export function DoneScreen() {
             <Icon name="share" size={18} /> 分享
           </button>
         </div>
-      </div>
+      </SheetOverlay>
 
       {toast && <div className="toast show">{toast}</div>}
     </div>

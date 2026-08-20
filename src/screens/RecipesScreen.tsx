@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CAT_ICON, CAT_NAME } from '../components/categories'
 import { Icon } from '../components/Icon'
+import { SheetOverlay } from '../components/Sheet'
 import {
   allEntries,
   difficultyLabel,
@@ -118,9 +119,8 @@ export function RecipesScreen() {
         ))}
       </div>
 
-      {/* 详情浮层 */}
-      <div className={`scrim${detail ? ' show' : ''}`} onClick={() => setDetail(null)} />
-      <div className={`sheet${detail ? ' show' : ''}`}>
+      {/* 详情浮层（Portal 到底层） */}
+      <SheetOverlay open={!!detail} onClose={() => setDetail(null)}>
         {detail && (
           <>
             <div className="grab" />
@@ -165,7 +165,7 @@ export function RecipesScreen() {
             </div>
           </>
         )}
-      </div>
+      </SheetOverlay>
     </div>
   )
 }

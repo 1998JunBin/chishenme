@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CAT_ICON } from '../components/categories'
 import { Icon } from '../components/Icon'
+import { SheetOverlay } from '../components/Sheet'
 import { findBuiltin } from '../engine/library'
 import { useApp } from '../store/app'
 import { useLibrary } from '../store/library'
@@ -138,9 +139,8 @@ export function ProfileScreen() {
         <button className="btn btn-ghost" onClick={resetAll}>重置演示数据</button>
       </div>
 
-      {/* 偏好浮层 */}
-      <div className={`scrim${sheet ? ' show' : ''}`} onClick={() => setSheet(null)} />
-      <div className={`sheet${sheet ? ' show' : ''}`}>
+      {/* 偏好浮层（Portal 到底层） */}
+      <SheetOverlay open={!!sheet} onClose={() => setSheet(null)}>
         <div className="grab" />
         {sheet === 'liked' && (
           <>
@@ -238,7 +238,7 @@ export function ProfileScreen() {
             ))}
           </>
         )}
-      </div>
+      </SheetOverlay>
 
       {toast && <div className="toast show">{toast}</div>}
     </div>

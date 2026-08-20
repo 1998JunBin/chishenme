@@ -11,6 +11,19 @@ import { ProfileScreen } from './screens/ProfileScreen'
 import { useApp } from './store/app'
 import { useLibrary } from './store/library'
 
+/** 测试/演示用：按默认偏好生成会话并自动选满，直接进确认页 */
+async function seedDoneSession() {
+  const { buildSessionRanked } = await import('./engine/session')
+  const { CATEGORY_ORDER, useSession } = await import('./store/session')
+  const { spec, ranked } = await buildSessionRanked(useApp.getState().prefs)
+  useSession.getState().start(spec, ranked)
+  const s = useSession.getState()
+  for (const c of CATEGORY_ORDER) {
+    for (let i = 0; i < spec[c]; i++) s.select()
+  }
+  useApp.getState().setScreen('done')
+}
+
 export default function App() {
   const init = useApp((s) => s.init)
   const refreshLibrary = useLibrary((s) => s.refresh)
@@ -24,6 +37,7 @@ export default function App() {
       const h = location.hash.replace('#', '')
       if (h === 'setup') useApp.getState().setScreen('setup')
       else if (h === 'swipe') useApp.getState().setScreen('swipe')
+      else if (h.startsWith('done')) void seedDoneSession()
       else if (h === 'recipes') useApp.getState().setTab('recipes')
       else if (h === 'profile') useApp.getState().setTab('profile')
     }
