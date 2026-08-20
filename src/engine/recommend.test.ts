@@ -40,7 +40,7 @@ describe('菜谱数据集', () => {
       expect(d.name.length).toBeGreaterThan(0)
       expect(d.time).toBeGreaterThan(0)
       expect(d.tags.length).toBeGreaterThan(0)
-      expect(d.image.startsWith('https://images.unsplash.com/photo-')).toBe(true)
+      expect(d.image.startsWith('https://')).toBe(true)
       expect(d.reason.length).toBeGreaterThan(0)
       const exp = d.time <= 15 ? 'easy' : d.time <= 45 ? 'medium' : 'hard'
       expect(d.difficulty).toBe(exp)

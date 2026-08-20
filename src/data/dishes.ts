@@ -1,4 +1,5 @@
 import type { Category, Difficulty, Dish } from '../types'
+import { IMAGE_OVERRIDE } from './images.override'
 
 /**
  * 已验证可用的 Unsplash 菜图（65 张，免费商用，无需署名）。
@@ -200,7 +201,7 @@ export const DISHES: Dish[] = [
   ...build(MEAT_ROWS, 'meat', 'm'),
   ...build(VEG_ROWS, 'veg', 'v'),
   ...build(SOUP_ROWS, 'soup', 's'),
-]
+].map((d) => (IMAGE_OVERRIDE[d.id] ? { ...d, image: IMAGE_OVERRIDE[d.id] } : d))
 
 export const DISH_BY_ID = new Map(DISHES.map((d) => [d.id, d]))
 
