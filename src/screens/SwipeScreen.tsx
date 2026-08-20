@@ -20,6 +20,7 @@ export function SwipeScreen() {
 
   const [seq, setSeq] = useState(0)
   const [popIn, setPopIn] = useState(false)
+  const [promoting, setPromoting] = useState(false)
   const [flipCat, setFlipCat] = useState<Category | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [stamp, setStamp] = useState<{ kind: 'skip' | 'back'; opacity: number } | null>(null)
@@ -70,7 +71,7 @@ export function SwipeScreen() {
     if (!prefs.hintSeen) patchPrefs({ hintSeen: true })
   }
 
-  /** 卡片本体直接飞出，飞出结束后再更新状态（与验收原型一致，避免“重复”感） */
+  /** 卡片本体直接飞出，同时后两张卡向前晋升（与验收原型一致，无空档、不重复） */
   function flyCard(kind: FlyKind, after: () => void) {
     if (pendingRef.current) return
     pendingRef.current = true
@@ -80,6 +81,7 @@ export function SwipeScreen() {
       pendingRef.current = false
       return
     }
+    if (kind !== 'undo') setPromoting(true)
     if (kind === 'select') {
       el.style.transition = 'transform .45s cubic-bezier(.4,.05,.5,1), opacity .45s'
       el.style.transform = 'translateY(-130%) rotate(-6deg) scale(.92)'
@@ -95,6 +97,7 @@ export function SwipeScreen() {
     }
     window.setTimeout(() => {
       after()
+      setPromoting(false)
       pendingRef.current = false
     }, kind === 'select' ? 460 : 410)
   }
@@ -244,12 +247,12 @@ export function SwipeScreen() {
       <div className="swipe-stage">
         <div className="deck">
           {next2 && (
-            <div key={`c3-${next2.id}`} className="card peek peek-in" id="card3">
+            <div key={`c3-${next2.id}`} className={`card peek${promoting ? ' promote-mid' : ' peek-in'}`} id="card3">
               <CardView dish={next2} category={active} liked={prefs.likes.includes(next2.id)} disliked={prefs.dislikes.includes(next2.id)} />
             </div>
           )}
           {next1 && (
-            <div key={`c2-${next1.id}`} className="card peek peek-in2" id="card2">
+            <div key={`c2-${next1.id}`} className={`card peek${promoting ? ' promote' : ' peek-in2'}`} id="card2">
               <CardView dish={next1} category={active} liked={prefs.likes.includes(next1.id)} disliked={prefs.dislikes.includes(next1.id)} />
             </div>
           )}
@@ -437,6 +440,7 @@ function DishImageThumb({ dish }: { dish: Dish }) {
       <img
         src={dish.image}
         alt={dish.name}
+        referrerPolicy="no-referrer"
         onError={() => setFailed(true)}
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />

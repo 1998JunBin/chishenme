@@ -185,6 +185,7 @@ function Thumb({ dish, big }: { dish: { image: string; category: 'meat' | 'veg' 
       <img
         src={dish.image}
         alt={dish.name}
+        referrerPolicy="no-referrer"
         onError={() => setFailed(true)}
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />

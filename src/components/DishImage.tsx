@@ -22,7 +22,7 @@ export function DishImage({ dish, className, iconSize = 24 }: DishImageProps) {
     )
   }
   return (
-    <img className={className} src={dish.image} alt={dish.name} onError={() => setFailed(true)} />
+    <img className={className} src={dish.image} alt={dish.name} referrerPolicy="no-referrer" onError={() => setFailed(true)} />
   )
 }
 
@@ -42,6 +42,7 @@ export function DishThumb({ dish, iconSize = 22 }: { dish: Dish; iconSize?: numb
       <img
         src={dish.image}
         alt={dish.name}
+        referrerPolicy="no-referrer"
         onError={() => setFailed(true)}
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />

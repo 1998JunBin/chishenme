@@ -264,6 +264,7 @@ function ComboThumb({ custom, category }: { custom: CustomDish | undefined; cate
       <img
         src={custom.image}
         alt=""
+        referrerPolicy="no-referrer"
         onError={() => setFailed(true)}
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />
