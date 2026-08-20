@@ -1,19 +1,37 @@
+import { useEffect } from 'react'
 import './App.css'
+import { PhoneShell } from './components/PhoneShell'
+import { HomeScreen } from './screens/HomeScreen'
+import { SetupScreen } from './screens/SetupScreen'
+import { SwipeScreen } from './screens/SwipeScreen'
+import { ProfileScreen, RecipesScreen } from './screens/PlaceholderScreens'
+import { useApp } from './store/app'
 
 export default function App() {
-  return (
-    <div className="shell">
-      <div className="blob a" />
-      <div className="blob b" />
-      <div className="brand">
-        <h1>
-          今天
-          <br />
-          <span>吃什么？</span>
-        </h1>
-        <p>工程搭建完成 · 阶段 1</p>
-        <p className="note">核心流程开发中，敬请期待</p>
-      </div>
-    </div>
-  )
+  const init = useApp((s) => s.init)
+  const tab = useApp((s) => s.tab)
+  const screen = useApp((s) => s.screen)
+
+  useEffect(() => {
+    void init()
+    const applyHash = () => {
+      const h = location.hash.replace('#', '')
+      if (h === 'setup') useApp.getState().setScreen('setup')
+      else if (h === 'swipe') useApp.getState().setScreen('swipe')
+      else if (h === 'recipes') useApp.getState().setTab('recipes')
+      else if (h === 'profile') useApp.getState().setTab('profile')
+    }
+    applyHash()
+    window.addEventListener('hashchange', applyHash)
+    return () => window.removeEventListener('hashchange', applyHash)
+  }, [init])
+
+  let content
+  if (screen === 'setup') content = <SetupScreen />
+  else if (screen === 'swipe') content = <SwipeScreen />
+  else if (tab === 'recipes') content = <RecipesScreen />
+  else if (tab === 'profile') content = <ProfileScreen />
+  else content = <HomeScreen />
+
+  return <PhoneShell>{content}</PhoneShell>
 }
