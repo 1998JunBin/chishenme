@@ -1,0 +1,101 @@
+/* ============================================================
+   吃什么 · Design Tokens（源自已验收的高保真原型）
+   ============================================================ */
+:root {
+  /* 颜色 */
+  --cream: #faf5ee;          /* 奶油白 · 背景 */
+  --cream-2: #f3ebdf;
+  --card: #ffffff;
+  --line: rgba(120, 90, 60, 0.12);
+  --ink: #2a241e;            /* 主文字 */
+  --ink-2: #8a7f74;          /* 次文字 */
+  --ink-3: #b5aba0;          /* 弱文字 */
+  --orange: #ff7a3c;         /* 暖橙 · 行动色 */
+  --orange-deep: #f06a2e;
+  --sage: #7e8f6e;           /* 鼠尾草绿 · 辅助/健康 */
+  --sage-soft: #e9efe2;
+
+  /* 玻璃材质 */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bd: rgba(255, 255, 255, 0.65);
+
+  /* 圆角 / 阴影 */
+  --radius: 26px;
+  --shadow-card: 0 14px 40px rgba(120, 90, 60, 0.16);
+  --shadow-float: 0 22px 60px rgba(120, 90, 60, 0.28);
+
+  /* 字体 */
+  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
+    "Microsoft YaHei", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* 通用玻璃面板 */
+.glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid var(--glass-bd);
+  box-shadow: 0 10px 34px rgba(120, 90, 60, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* 通用按钮 */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.12s ease, box-shadow 0.2s ease;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-primary {
+  background: linear-gradient(180deg, #ff8a50, #ff6b2e);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 700;
+  padding: 17px 24px;
+  width: 100%;
+  letter-spacing: 0.3px;
+  box-shadow: 0 12px 28px rgba(255, 107, 46, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.btn-ghost {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  color: var(--ink);
+  border: 1px solid var(--glass-bd);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 20px;
+}
