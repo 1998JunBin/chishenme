@@ -15,6 +15,7 @@ npm install
 npm run dev     # 本地开发
 npm run build   # 生产构建
 npm run lint
+npm test      # 运行测试（数据集 + 推荐引擎）
 ```
 
 ## 发布
