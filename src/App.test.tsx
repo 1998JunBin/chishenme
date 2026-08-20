@@ -65,7 +65,7 @@ describe('应用骨架与首页', () => {
     await screen.findByText('吃什么？')
     fireEvent.click(screen.getByText('菜谱'))
     expect(await screen.findByText('添加')).toBeTruthy()
-    expect(screen.getByText('全部')).toBeTruthy()
+    expect(screen.getAllByText('全部').length).toBeGreaterThanOrEqual(2)
     fireEvent.click(screen.getByText('我的'))
     expect(await screen.findByText('我的喜欢')).toBeTruthy()
   })

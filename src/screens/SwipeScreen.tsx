@@ -8,6 +8,7 @@ import { buildSessionRanked } from '../engine/session'
 import { useApp } from '../store/app'
 import { useLibrary } from '../store/library'
 import { CATEGORY_ORDER, useSession } from '../store/session'
+import { useToast } from '../store/toast'
 import type { Category, Dish } from '../types'
 
 type FlyKind = 'select' | 'skip' | 'undo'
@@ -108,7 +109,12 @@ export function SwipeScreen() {
     const dishId = current.id
     markHint()
     flyCard('select', () => {
+      const prev = useSession.getState().active
       session.select()
+      const next = useSession.getState().active
+      if (next !== prev && !useSession.getState().allDone()) {
+        useToast.getState().show(`${CAT_NAME[prev]}已选完，接下来选${CAT_NAME[next]}`)
+      }
       setSeq((n) => n + 1)
       setFlipCat(cat)
       window.setTimeout(() => setFlipCat(null), 600)
@@ -144,6 +150,9 @@ export function SwipeScreen() {
       ? prefs.likes.filter((x) => x !== current.id)
       : [...prefs.likes, current.id]
     patchPrefs({ likes, dislikes: prefs.dislikes.filter((x) => x !== current.id) })
+    useToast
+      .getState()
+      .show(likes.includes(current.id) ? '❤️ 已标记喜欢，提升长期权重' : '已取消喜欢')
   }
 
   function toggleDislike() {
@@ -152,6 +161,9 @@ export function SwipeScreen() {
       ? prefs.dislikes.filter((x) => x !== current.id)
       : [...prefs.dislikes, current.id]
     patchPrefs({ dislikes, likes: prefs.likes.filter((x) => x !== current.id) })
+    useToast
+      .getState()
+      .show(dislikes.includes(current.id) ? '👎 已标记不喜欢' : '已取消不喜欢')
   }
 
   /* ---------- 手势 ---------- */

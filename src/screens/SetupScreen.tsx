@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
 import { Icon } from '../components/Icon'
+import { DISHES } from '../data/dishes'
 import { useApp } from '../store/app'
-import { DEFAULT_TAG_OPTIONS } from '../types'
+import type { IconName } from '../components/Icon'
 
 const LIMITS: Record<'meat' | 'veg' | 'soup' | 'people', [number, number]> = {
   meat: [0, 6],
@@ -8,6 +10,13 @@ const LIMITS: Record<'meat' | 'veg' | 'soup' | 'people', [number, number]> = {
   soup: [0, 3],
   people: [1, 12],
 }
+
+/** 推荐偏好标签：按组展示（对应 PRD 的 烹饪效率 / 口味 / 其他） */
+const TAG_GROUPS: { label: string; icon: IconName; tags: string[] }[] = [
+  { label: '烹饪效率', icon: 'plus', tags: ['快手', '家常'] },
+  { label: '口味', icon: 'leaf', tags: ['辣', '酸', '酸甜', '甜', '咸鲜', '清淡'] },
+  { label: '其他', icon: 'bowl', tags: ['下饭', '高蛋白', '适合多人'] },
+]
 
 export function SetupScreen() {
   const prefs = useApp((s) => s.prefs)
@@ -26,7 +35,20 @@ export function SetupScreen() {
     patchPrefs({ tags })
   }
 
-  const tagOptions = [...new Set([...DEFAULT_TAG_OPTIONS, ...prefs.customTags])]
+  /* 收集菜谱里所有用到的标签，未分组的放进「更多」，自定义标签单独一组 */
+  const tagGroups = useMemo(() => {
+    const known = new Set(TAG_GROUPS.flatMap((g) => g.tags))
+    const extra = new Set<string>()
+    for (const d of DISHES) {
+      for (const t of d.tags) if (!known.has(t)) extra.add(t)
+    }
+    const groups = [...TAG_GROUPS]
+    if (extra.size) groups.push({ label: '更多', icon: 'plus' as IconName, tags: [...extra] })
+    if (prefs.customTags.length) {
+      groups.push({ label: '自定义', icon: 'plus' as IconName, tags: [...prefs.customTags] })
+    }
+    return groups
+  }, [prefs.customTags])
 
   return (
     <div className="setup-inner">
@@ -47,18 +69,23 @@ export function SetupScreen() {
         <Stepper icon="users" label="几个人吃" value={prefs.spec.people} unit="人" onMinus={() => bump('people', -1)} onPlus={() => bump('people', 1)} />
       </div>
       <div className="set-group">
-        <div className="set-label">推荐偏好（可多选）</div>
-        <div className="chips">
-          {tagOptions.map((tag) => (
-            <span
-              key={tag}
-              className={`chip${prefs.tags.includes(tag) ? ' on' : ''}`}
-              onClick={() => toggleTag(tag)}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        <div className="set-label">推荐偏好（可多选，将影响推荐排序）</div>
+        {tagGroups.map((g) => (
+          <div key={g.label} className="tag-group">
+            <div className="tag-group-label">{g.label}</div>
+            <div className="chips">
+              {g.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className={`chip${prefs.tags.includes(tag) ? ' on' : ''}`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
       <div className="setup-cta">
         <button className="btn btn-primary" onClick={() => setScreen('swipe')}>

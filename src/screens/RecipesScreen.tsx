@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CAT_ICON, CAT_NAME } from '../components/categories'
-import { Icon } from '../components/Icon'
+import { Icon, type IconName } from '../components/Icon'
 import { SheetOverlay } from '../components/Sheet'
 import {
   allEntries,
@@ -12,6 +12,7 @@ import {
 } from '../engine/library'
 import { useApp } from '../store/app'
 import { useLibrary } from '../store/library'
+import type { Category } from '../types'
 
 export function RecipesScreen() {
   const prefs = useApp((s) => s.prefs)
@@ -23,23 +24,32 @@ export function RecipesScreen() {
   const removeDish = useLibrary((s) => s.removeDish)
 
   const [filter, setFilter] = useState<RecipeFilterKey>('all')
+  const [category, setCategory] = useState<'all' | Category>('all')
+  const [query, setQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
   const [detail, setDetail] = useState<RecipeEntry | null>(null)
 
   const entries = useMemo(
     () => allEntries(prefs.dishOverrides, customDishes),
     [prefs.dishOverrides, customDishes],
   )
-  const shown = useMemo(
-    () =>
-      filterEntries(
-        entries,
-        filter,
-        prefs.likes,
-        prefs.dislikes,
-        recent.map((r) => r.id),
-      ),
-    [entries, filter, prefs.likes, prefs.dislikes, recent],
-  )
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return filterEntries(
+      entries,
+      filter,
+      prefs.likes,
+      prefs.dislikes,
+      recent.map((r) => r.id),
+    )
+      .filter((e) => category === 'all' || e.category === category)
+      .filter(
+        (e) =>
+          !q ||
+          e.dish.name.toLowerCase().includes(q) ||
+          e.dish.tags.some((t) => t.toLowerCase().includes(q)),
+      )
+  }, [entries, filter, prefs.likes, prefs.dislikes, recent, category, query])
 
   function toggleLike(id: string) {
     const likes = prefs.likes.includes(id)
@@ -76,10 +86,30 @@ export function RecipesScreen() {
     <div className="recipes-screen">
       <div className="list-head row">
         <h1 className="list-title">菜谱</h1>
-        <button className="btn btn-primary btn-add" onClick={() => { setEditing(null); setScreen('addrecipe') }}>
-          <Icon name="plus" size={18} /> 添加
-        </button>
+        <div className="head-actions">
+          <button
+            className={`btn btn-ghost head-btn${searchOpen ? ' on' : ''}`}
+            onClick={() => setSearchOpen((v) => !v)}
+          >
+            <SearchIcon />
+          </button>
+          <button className="btn btn-primary btn-add" onClick={() => { setEditing(null); setScreen('addrecipe') }}>
+            <Icon name="plus" size={18} /> 添加
+          </button>
+        </div>
       </div>
+      {searchOpen && (
+        <div className="search-bar">
+          <SearchIcon />
+          <input
+            className="field"
+            autoFocus
+            placeholder="搜索菜名或标签，如：辣、牛肉…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+      )}
       <div className="seg2">
         {RECIPE_FILTERS.map((f) => (
           <span
@@ -91,14 +121,39 @@ export function RecipesScreen() {
           </span>
         ))}
       </div>
+      <div className="cat-row">
+        {(
+          [
+            ['all', '全部', null],
+            ['meat', '荤菜', 'meat' as const],
+            ['veg', '素菜', 'leaf' as const],
+            ['soup', '汤', 'soup' as const],
+          ] as [string, string, IconName | null][]
+        ).map(([key, label, icn]) => (
+          <span
+            key={key}
+            className={`cat-tab${category === key ? ' on' : ''}`}
+            onClick={() => setCategory(key as 'all' | Category)}
+          >
+            {icn && <Icon name={icn} size={15} />}
+            {label}
+          </span>
+        ))}
+      </div>
       <div className="recipe-list">
         {shown.length === 0 && (
           <div className="list-note">
-            {filter === 'liked' && '还没有喜欢的菜，去卡片上点 ♡ 标记吧'}
-            {filter === 'disliked' && '还没有不喜欢的菜'}
-            {filter === 'custom' && '还没有自定义菜谱，点右上角「添加」'}
-            {filter === 'recent' && '还没选过菜，先去「吃什么」滑几道'}
-            {filter === 'all' && '暂无菜谱'}
+            {query.trim()
+              ? '没有找到匹配的菜'
+              : filter === 'liked'
+                ? '还没有喜欢的菜，去卡片上点 ♡ 标记吧'
+                : filter === 'disliked'
+                  ? '还没有不喜欢的菜'
+                  : filter === 'custom'
+                    ? '还没有自定义菜谱，点右上角「添加」'
+                    : filter === 'recent'
+                      ? '还没选过菜，先去「吃什么」滑几道'
+                      : '暂无菜谱'}
           </div>
         )}
         {shown.map((e) => (
@@ -190,5 +245,22 @@ function Thumb({ dish, big }: { dish: { image: string; category: 'meat' | 'veg' 
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />
     </span>
+  )
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      width={18}
+      height={18}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </svg>
   )
 }

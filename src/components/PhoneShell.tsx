@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react'
 import { Icon, type IconName } from './Icon'
 import { useApp, type Tab } from '../store/app'
+import { useToast } from '../store/toast'
 
 /** 手机壳：桌面居中展示手机边框，移动端全屏 */
 export function PhoneShell({ children }: { children: ReactNode }) {
+  const toast = useToast((s) => s.msg)
   return (
     <div className="stage">
       <div className="phone">
@@ -14,6 +16,7 @@ export function PhoneShell({ children }: { children: ReactNode }) {
         </div>
         <div className="screens">{children}</div>
         <TabBar />
+        {toast && <div className="toast show">{toast}</div>}
       </div>
       <div className="caption">吃什么 · V1</div>
     </div>

@@ -69,8 +69,8 @@ export function DoneScreen() {
     setTab('home')
   }
 
-  function exportImage() {
-    const canvas = buildPoster()
+  async function exportImage() {
+    const canvas = await buildPoster()
     canvas.toBlob((blob) => {
       if (!blob) {
         showToast('导出失败')
@@ -189,13 +189,13 @@ export function DoneScreen() {
     </div>
   )
 
-  function buildPoster(): HTMLCanvasElement {
+  async function buildPoster(): Promise<HTMLCanvasElement> {
     const W = 1080
     const P = 84
     const F = '-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif'
     const cats = CATEGORY_ORDER.filter((c) => session.selected[c].length)
     const rows = session.countPicked()
-    const H = P + 88 + 42 + 30 + 20 + cats.length * 70 + rows * 88 + 76 + P
+    const H = P + 88 + 42 + 30 + 20 + cats.length * 70 + rows * 96 + 76 + P
     const cv = document.createElement('canvas')
     cv.width = W
     cv.height = H
@@ -228,15 +228,20 @@ export function DoneScreen() {
       for (const id of session.selected[c]) {
         const d = dishById.get(id)
         if (!d) continue
+        // 菜品缩略图（圆角裁剪）
+        if (d.image) {
+          const img = await loadImage(d.image)
+          if (img) drawRoundedImage(ctx, img, P + 8, y - 76, 78, 78, 14)
+        }
         ctx.fillStyle = '#2A241E'
-        ctx.font = `600 44px ${F}`
-        ctx.fillText(d.name, P + 10, y + 42)
+        ctx.font = `600 42px ${F}`
+        ctx.fillText(d.name, P + 104, y + 38)
         ctx.fillStyle = '#8A7F74'
         ctx.font = `400 30px ${F}`
         ctx.textAlign = 'right'
-        ctx.fillText(`${d.time}分钟`, W - P, y + 38)
+        ctx.fillText(`${d.time}分钟`, W - P, y + 36)
         ctx.textAlign = 'left'
-        y += 88
+        y += 96
       }
       y += 12
     }
@@ -246,6 +251,41 @@ export function DoneScreen() {
     ctx.fillText(`共 ${rows} 道 · 慢慢享用`, W / 2, y + 18)
     return cv
   }
+}
+
+/** 加载菜品图（跨域允许 + 无 Referer，避免画布被污染） */
+function loadImage(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const im = new Image()
+    im.crossOrigin = 'anonymous'
+    im.referrerPolicy = 'no-referrer'
+    im.onload = () => resolve(im)
+    im.onerror = () => resolve(null)
+    im.src = src
+  })
+}
+
+/** 圆角裁剪绘制图片 */
+function drawRoundedImage(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+) {
+  ctx.save()
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.arcTo(x + w, y, x + w, y + h, r)
+  ctx.arcTo(x + w, y + h, x, y + h, r)
+  ctx.arcTo(x, y + h, x, y, r)
+  ctx.arcTo(x, y, x + w, y, r)
+  ctx.closePath()
+  ctx.clip()
+  ctx.drawImage(img, x, y, w, h)
+  ctx.restore()
 }
 
 function DishImageThumb({ dish }: { dish: Dish }) {

@@ -1,4 +1,6 @@
 import type { CSSProperties } from 'react'
+import dislikeIcon from '../assets/icons/dislike.png'
+import meatIcon from '../assets/icons/meat.png'
 
 /** 扁平线性图标集（源自已验收高保真原型的 SVG） */
 const PATHS = {
@@ -34,6 +36,23 @@ interface IconProps {
 }
 
 export function Icon({ name, size = 24, strokeWidth = 1.8, className, style }: IconProps) {
+  // 用户提供的位图图标：以 mask 方式按 currentColor 染色（透明底白色线稿）
+  const mask = MASK_ICONS[name]
+  if (mask) {
+    const maskStyle: CSSProperties = {
+      display: 'inline-block',
+      width: size,
+      height: size,
+      background: 'currentColor',
+      maskImage: `url(${mask})`,
+      WebkitMaskImage: `url(${mask})`,
+      maskSize: 'contain',
+      maskRepeat: 'no-repeat',
+      maskPosition: 'center',
+      ...style,
+    }
+    return <span className={className} style={maskStyle} aria-hidden />
+  }
   const filled = FILLED.has(name)
   return (
     <svg
@@ -51,4 +70,10 @@ export function Icon({ name, size = 24, strokeWidth = 1.8, className, style }: I
       dangerouslySetInnerHTML={{ __html: PATHS[name] }}
     />
   )
+}
+
+/** 使用用户位图（mask 染色）的图标 */
+const MASK_ICONS: Partial<Record<IconName, string>> = {
+  thumbDown: dislikeIcon,
+  meat: meatIcon,
 }
