@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { DishImage, CAT_ICON, CAT_NAME } from '../components/DishImage'
+import { DishImage } from '../components/DishImage'
+import { CAT_ICON, CAT_NAME } from '../components/categories'
 import { Icon } from '../components/Icon'
 import { recordRecent } from '../db/db'
 import { buildSessionRanked } from '../engine/session'

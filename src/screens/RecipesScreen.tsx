@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { CAT_ICON, CAT_NAME } from '../components/DishImage'
+import { useMemo, useState } from 'react'
+import { CAT_ICON, CAT_NAME } from '../components/categories'
 import { Icon } from '../components/Icon'
 import {
   allEntries,
@@ -190,12 +190,4 @@ function Thumb({ dish, big }: { dish: { image: string; category: 'meat' | 'veg' 
       />
     </span>
   )
-}
-
-/** 挂载时加载自定义菜/搭配/最近吃过 */
-export function useLibraryInit() {
-  const refresh = useLibrary((s) => s.refresh)
-  useEffect(() => {
-    void refresh()
-  }, [refresh])
 }

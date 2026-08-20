@@ -1,18 +1,7 @@
 import { useState } from 'react'
-import { Icon, type IconName } from './Icon'
-import type { Category, Dish } from '../types'
-
-export const CAT_ICON: Record<Category, IconName> = {
-  meat: 'meat',
-  veg: 'leaf',
-  soup: 'soup',
-}
-
-export const CAT_NAME: Record<Category, string> = {
-  meat: '荤菜',
-  veg: '素菜',
-  soup: '汤',
-}
+import { Icon } from './Icon'
+import { CAT_ICON } from './categories'
+import type { Dish } from '../types'
 
 interface DishImageProps {
   dish: Dish

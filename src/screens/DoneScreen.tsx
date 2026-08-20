@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CAT_ICON, CAT_NAME } from '../components/DishImage'
+import { CAT_ICON, CAT_NAME } from '../components/categories'
 import { Icon } from '../components/Icon'
 import { newId } from '../db/db'
 import { useApp } from '../store/app'

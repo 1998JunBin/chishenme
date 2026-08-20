@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "deploy": "bash scripts/deploy-gh-pages.sh",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "icons": "node scripts/gen-icons.mjs"
   },
   "dependencies": {
     "idb": "^8.0.0",
